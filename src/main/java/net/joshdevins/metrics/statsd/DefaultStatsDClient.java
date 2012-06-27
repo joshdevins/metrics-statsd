@@ -75,11 +75,11 @@ public class DefaultStatsDClient implements StatsDClient {
 		return connection.send(String.format("%s:%d|g", bucket, value));
 	}
 
-	public boolean timing(final String bucket, final int timeInMillis) {
+	public boolean timing(final String bucket, final long timeInMillis) {
 		return connection.send(String.format("%s:%d|ms", bucket, timeInMillis));
 	}
 
-	public boolean timing(final String bucket, final int timeInMillis,
+	public boolean timing(final String bucket, final long timeInMillis,
 			final double sampleRate) {
 
 		// see if we should sample this call

@@ -44,7 +44,7 @@ public interface StatsDClient {
 	 * 
 	 * @return success/failure of the operation
 	 */
-	public boolean timing(String bucket, int timeInMillis);
+	public boolean timing(String bucket, long timeInMillis);
 
 	/**
 	 * For the given {@code bucket}, send a timer value of {@code timeInMillis}.
@@ -55,5 +55,5 @@ public interface StatsDClient {
 	 * 
 	 * @return success/failure of the operation
 	 */
-	public boolean timing(String bucket, int timeInMillis, double sampleRate);
+	public boolean timing(String bucket, long timeInMillis, double sampleRate);
 }
