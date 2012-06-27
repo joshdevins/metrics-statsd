@@ -20,6 +20,9 @@ public abstract class AbstractStatsDListener {
 
 	private MetricPredicate metricPredicate;
 
+	/**
+	 * Default constructor.
+	 */
 	protected <M extends Metric> AbstractStatsDListener(
 			final Class<M> metricType, final StatsDClient client) {
 
@@ -46,6 +49,9 @@ public abstract class AbstractStatsDListener {
 		this.metricPredicate = metricPredicate;
 	}
 
+	/**
+	 * Gets the underlying {@link StatsDClient}.
+	 */
 	protected StatsDClient getClient() {
 		return client;
 	}

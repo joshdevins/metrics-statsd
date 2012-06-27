@@ -48,7 +48,6 @@ public class DefaultStatsDClient implements StatsDClient {
 	 */
 	public DefaultStatsDClient(final String host, final int port)
 			throws IOException {
-
 		this(new StatsDUdpConnection(host, port));
 	}
 
