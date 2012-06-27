@@ -1,0 +1,114 @@
+package net.joshdevins.metrics.realtime.statsd;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.DatagramChannel;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * A concrete {@link StatsDConnection} using a {@link DatagramChannel} as the
+ * underlying communication mechanism. At runtime, this will be the default
+ * {@link StatsDConnection} implementation that will be used.
+ * 
+ * @author Josh Devins
+ */
+public class StatsDUdpConnection implements StatsDConnection {
+
+	private static final String DEFAULT_ENCODING = "UTF-8";
+
+	private static Logger LOG = LoggerFactory
+			.getLogger(StatsDUdpConnection.class);
+
+	private final InetSocketAddress address;
+
+	private final DatagramChannel channel;
+
+	/**
+	 * Creates an underlying non-blocking {@link DatagramChannel} to use for UDP
+	 * communication.
+	 * 
+	 * @param host
+	 *            host to connect to
+	 * @param port
+	 *            port to connect to
+	 * 
+	 * @throws IOException
+	 *             on failure to open underlying {@link DatagramChannel}
+	 */
+	public StatsDUdpConnection(final String host, final int port)
+			throws IOException {
+
+		address = new InetSocketAddress(host, port);
+		channel = DatagramChannel.open();
+		channel.configureBlocking(false);
+	}
+
+	/**
+	 * Sends the message over the UDP channel using UTF-8 to decode into bytes.
+	 * This uses an underlying non-blocking {@link DatagramChannel} so it should
+	 * never block the caller.
+	 */
+	public boolean send(final String message) {
+
+		// extract bytes from UTF-8 string
+		byte[] bytes = new byte[0];
+		try {
+			bytes = message.getBytes(DEFAULT_ENCODING);
+		} catch (UnsupportedEncodingException e) {
+			LOG.error(
+					"Failed to convert message from String to bytes using the default encoding {}. message=\"{}\"",
+					DEFAULT_ENCODING, message);
+			return false;
+		}
+
+		ByteBuffer src = ByteBuffer.wrap(bytes);
+
+		// quick check to ensure socket is still connected to destination UDP
+		if (!channel.isConnected()) {
+			setup();
+		}
+
+		// send bytes over UDP
+		int sentBytes = 0;
+		try {
+			sentBytes = channel.write(src);
+		} catch (Throwable t) {
+			LOG.error("Failed to send message. message=\"" + message + "\"", t);
+			return false;
+		}
+
+		// ensure all bytes were actually sent
+		if (bytes.length != sentBytes) {
+			LOG.error(
+					"Failed to send entirety of message. Only sent {} out of {} bytes. message=\"{}\"",
+					new Object[] { Integer.valueOf(sentBytes),
+							Integer.valueOf(bytes.length), message });
+			return false;
+		}
+
+		return true;
+	}
+
+	public boolean setup() {
+		try {
+			channel.connect(address);
+		} catch (IOException e) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public void tearDown() {
+		try {
+			channel.close();
+		} catch (IOException ioe) {
+			LOG.warn("Failed to cleanly close the underlying DatagramChannel",
+					ioe);
+		}
+	}
+}
