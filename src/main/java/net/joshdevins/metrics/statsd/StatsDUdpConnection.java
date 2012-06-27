@@ -1,4 +1,4 @@
-package net.joshdevins.metrics.realtime.statsd;
+package net.joshdevins.metrics.statsd;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

@@ -1,4 +1,4 @@
-package net.joshdevins.metrics.realtime.statsd;
+package net.joshdevins.metrics.statsd;
 
 /**
  * The contract defining how we can interact with the StatsD backend. This is in
