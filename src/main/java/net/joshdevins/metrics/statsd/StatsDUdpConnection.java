@@ -47,6 +47,25 @@ public class StatsDUdpConnection implements StatsDConnection {
 		channel.configureBlocking(false);
 	}
 
+	public void close() {
+		try {
+			channel.close();
+		} catch (IOException ioe) {
+			LOG.warn("Failed to cleanly close the underlying DatagramChannel",
+					ioe);
+		}
+	}
+
+	public boolean connect() {
+		try {
+			channel.connect(address);
+		} catch (IOException e) {
+			return false;
+		}
+
+		return true;
+	}
+
 	/**
 	 * Sends the message over the UDP channel using UTF-8 to decode into bytes.
 	 * This uses an underlying non-blocking {@link DatagramChannel} so it should
@@ -69,7 +88,7 @@ public class StatsDUdpConnection implements StatsDConnection {
 
 		// quick check to ensure socket is still connected to destination UDP
 		if (!channel.isConnected()) {
-			setup();
+			connect();
 		}
 
 		// send bytes over UDP
@@ -91,24 +110,5 @@ public class StatsDUdpConnection implements StatsDConnection {
 		}
 
 		return true;
-	}
-
-	public boolean setup() {
-		try {
-			channel.connect(address);
-		} catch (IOException e) {
-			return false;
-		}
-
-		return true;
-	}
-
-	public void tearDown() {
-		try {
-			channel.close();
-		} catch (IOException ioe) {
-			LOG.warn("Failed to cleanly close the underlying DatagramChannel",
-					ioe);
-		}
 	}
 }

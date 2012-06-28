@@ -9,6 +9,18 @@ package net.joshdevins.metrics.statsd;
 public interface StatsDConnection {
 
 	/**
+	 * Closes the underlying StatsD connection.
+	 */
+	public void close();
+
+	/**
+	 * Establishes the underlying StatsD connection.
+	 * 
+	 * @return success/failure of the connection setup
+	 */
+	public boolean connect();
+
+	/**
 	 * Sends the {@link String}-based message to the StatsD backend.
 	 * 
 	 * @param message
@@ -16,16 +28,4 @@ public interface StatsDConnection {
 	 * @return success/failure of delivery of all bytes of the message
 	 */
 	public boolean send(String message);
-
-	/**
-	 * Sets up the underlying StatsD connection.
-	 * 
-	 * @return success/failure of the connection setup
-	 */
-	public boolean setup();
-
-	/**
-	 * Tears down the underlying StatsD connection.
-	 */
-	public void tearDown();
 }

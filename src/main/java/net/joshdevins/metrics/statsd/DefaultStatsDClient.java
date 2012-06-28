@@ -23,7 +23,7 @@ public class DefaultStatsDClient implements StatsDClient {
 	/**
 	 * Random number generator with a psuedo-random seed based on local clock.
 	 */
-	private final Random RANDOM = new Random();
+	private static final Random RANDOM = new Random();
 
 	private final StatsDConnection connection;
 
@@ -36,10 +36,12 @@ public class DefaultStatsDClient implements StatsDClient {
 	 */
 	public DefaultStatsDClient(final StatsDConnection connection) {
 		this.connection = connection;
+		this.connection.connect();
 	}
 
 	/**
-	 * Creates a new client using the default {@link StatsDUdpConnection}.
+	 * Creates a new client using the default {@link StatsDUdpConnection} and
+	 * establish the underlying connection.
 	 * 
 	 * @throws IOException
 	 *             if a UDP socket could not be established
@@ -58,11 +60,10 @@ public class DefaultStatsDClient implements StatsDClient {
 	public boolean count(final String bucket, final long delta,
 			final double sampleRate) {
 
-		// see if we should sample this call
-		if (RANDOM.nextDouble() <= sampleRate) {
+		if (shouldSendSample(sampleRate)) {
 
-			String message = String.format("%s:%d|c|@%f", bucket, delta,
-					sampleRate);
+			String message = String.format("%s:%d|c|@%s", bucket, delta,
+					Double.toString(sampleRate));
 			return connection.send(message);
 		}
 
@@ -74,6 +75,13 @@ public class DefaultStatsDClient implements StatsDClient {
 		return connection.send(String.format("%s:%d|g", bucket, value));
 	}
 
+	/**
+	 * Cleanup client and underlying connection.
+	 */
+	public void shutdown() {
+		connection.close();
+	}
+
 	public boolean timing(final String bucket, final long timeInMillis) {
 		return connection.send(String.format("%s:%d|ms", bucket, timeInMillis));
 	}
@@ -81,15 +89,18 @@ public class DefaultStatsDClient implements StatsDClient {
 	public boolean timing(final String bucket, final long timeInMillis,
 			final double sampleRate) {
 
-		// see if we should sample this call
-		if (RANDOM.nextDouble() <= sampleRate) {
+		if (shouldSendSample(sampleRate)) {
 
-			String message = String.format("%s:%d|ms|@%f", bucket,
-					timeInMillis, sampleRate);
+			String message = String.format("%s:%d|ms|@%s", bucket,
+					timeInMillis, Double.toString(sampleRate));
 			return connection.send(message);
 		}
 
 		// this was successful since it was not sampled
 		return true;
+	}
+
+	private static boolean shouldSendSample(final double sampleRate) {
+		return RANDOM.nextDouble() <= sampleRate;
 	}
 }
