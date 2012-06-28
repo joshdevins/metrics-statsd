@@ -41,6 +41,17 @@ public class DefaultStatsDClient implements StatsDClient {
 
 	/**
 	 * Creates a new client using the default {@link StatsDUdpConnection} and
+	 * establish the underlying connection. Uses port <code>8125</code> by
+	 * default.
+	 * 
+	 * @see DefaultStatsDClient#DefaultStatsDClient(String, int)
+	 */
+	public DefaultStatsDClient(final String host) throws IOException {
+		this(new StatsDUdpConnection(host));
+	}
+
+	/**
+	 * Creates a new client using the default {@link StatsDUdpConnection} and
 	 * establish the underlying connection.
 	 * 
 	 * @throws IOException

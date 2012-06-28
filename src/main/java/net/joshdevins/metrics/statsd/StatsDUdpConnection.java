@@ -18,7 +18,15 @@ import org.slf4j.LoggerFactory;
  */
 public class StatsDUdpConnection implements StatsDConnection {
 
-	private static final String DEFAULT_ENCODING = "UTF-8";
+	/**
+	 * The default StatsD port: 8125
+	 */
+	public static final int DEFAULT_PORT = 8125;
+
+	/**
+	 * The default message encoding: UTF-8
+	 */
+	public static final String DEFAULT_ENCODING = "UTF-8";
 
 	private static Logger LOG = LoggerFactory
 			.getLogger(StatsDUdpConnection.class);
@@ -26,6 +34,16 @@ public class StatsDUdpConnection implements StatsDConnection {
 	private final InetSocketAddress address;
 
 	private final DatagramChannel channel;
+
+	/**
+	 * Creates an underlying non-blocking {@link DatagramChannel} to use for UDP
+	 * communication. Uses port <code>8125</code> by default.
+	 * 
+	 * @see StatsDUdpConnection#StatsDUdpConnection(String, int)
+	 */
+	public StatsDUdpConnection(final String host) throws IOException {
+		this(host, DEFAULT_PORT);
+	}
 
 	/**
 	 * Creates an underlying non-blocking {@link DatagramChannel} to use for UDP

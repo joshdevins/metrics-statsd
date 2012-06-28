@@ -5,8 +5,8 @@ An extension to [joshdevins/metrics](https://github.com/joshdevins/metrics) (for
 # Usage
 
 ```java
-// create a StatsD client with the host:port of your choosing
-client = new DefaultStatsDClient("localhost", "9387");
+// create a StatsD client with the host:port of your choosing (or port 8125 by default)
+client = new DefaultStatsDClient("localhost");
 
 // use Metric to access the default MetricListenersRegistry
 listenersRegistry = Metric.getDefaultMetricListenersRegistry();
