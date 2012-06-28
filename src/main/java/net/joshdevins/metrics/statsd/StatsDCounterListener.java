@@ -20,6 +20,6 @@ public class StatsDCounterListener extends AbstractStatsDListener implements
 	}
 
 	public void onUpdate(final Counter counter, final long delta) {
-		getClient().gauge(extractBucketName(counter), delta);
+		getClient().gauge(extractBucketName(counter), counter.getCount());
 	}
 }
