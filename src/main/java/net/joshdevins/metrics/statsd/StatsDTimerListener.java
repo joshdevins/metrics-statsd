@@ -5,6 +5,11 @@ import java.util.concurrent.TimeUnit;
 import com.yammer.metrics.core.Timer;
 import com.yammer.metrics.core.TimerListener;
 
+/**
+ * Send {@link Timer} metric changes to StatsD as timings.
+ * 
+ * @author Josh Devins
+ */
 public class StatsDTimerListener extends AbstractSamplingStatsDListener
 		implements TimerListener {
 
@@ -16,10 +21,10 @@ public class StatsDTimerListener extends AbstractSamplingStatsDListener
 			final TimeUnit unit) {
 
 		if (shouldSample()) {
-			getClient().timing(timer.getName().getMBeanName(),
+			getClient().timing(extractBucketName(timer),
 					unit.toMillis(duration), getSampleRate());
 		} else {
-			getClient().timing(timer.getName().getMBeanName(),
+			getClient().timing(extractBucketName(timer),
 					unit.toMillis(duration));
 		}
 	}

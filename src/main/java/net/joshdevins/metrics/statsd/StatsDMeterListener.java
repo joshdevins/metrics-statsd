@@ -3,6 +3,11 @@ package net.joshdevins.metrics.statsd;
 import com.yammer.metrics.core.Meter;
 import com.yammer.metrics.core.MeterListener;
 
+/**
+ * Send {@link Meter} metric changes to StatsD as counters.
+ * 
+ * @author Josh Devins
+ */
 public class StatsDMeterListener extends AbstractSamplingStatsDListener
 		implements MeterListener {
 
@@ -13,10 +18,9 @@ public class StatsDMeterListener extends AbstractSamplingStatsDListener
 	public void onMark(final Meter meter, final long n) {
 
 		if (shouldSample()) {
-			getClient().count(meter.getName().getMBeanName(), n,
-					getSampleRate());
+			getClient().count(extractBucketName(meter), n, getSampleRate());
 		} else {
-			getClient().count(meter.getName().getMBeanName(), n);
+			getClient().count(extractBucketName(meter), n);
 		}
 	}
 }
