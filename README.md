@@ -21,6 +21,12 @@ specialCounterListener = new StatsDCounterListener(client);
 
 // override the MetricPredicate for fine-grained control of which metrics the listener
 //  should be called for, but do so BEFORE registering the listener with the registry
+metricPredicate = new MetricPredicate() {
+    public boolean matches(final MetricName name, final Metric metric) {
+        // I only care about "foo.bar.*" metrics
+        return name.getGroup().startsWith("foo.bar.*");
+    }
+};
 specialCounterListener.setMetricPredicate(metricPredicate);
 
 // also override the BucketNameFormatter to send different bucket names to StatsD
