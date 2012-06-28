@@ -19,11 +19,12 @@ listenersRegistry.addListener(counterListener);
 // override some default functionality
 specialCounterListener = new StatsDCounterListener(client);
 
-// override the MetricPredicate for fine-grained control of which metrics the listener should be called for, but do so BEFORE registering the listener with the registry
+// override the MetricPredicate for fine-grained control of which metrics the listener
+//  should be called for, but do so BEFORE registering the listener with the registry
 specialCounterListener.setMetricPredicate(metricPredicate);
 
 // also override the BucketNameFormatter to send different bucket names to StatsD
-// the default bucket names are: group.type.[scope].name, where scope is inserted only if provided in your metric's name
+// the default bucket names are: group.type.[scope].name
 specialCounterListener.setBucketNameFormatter(formatter);
 
 listenersRegistry.addListener(specialCounterListener);
