@@ -13,7 +13,7 @@ import com.yammer.metrics.core.TimerListener;
 public class StatsDTimerListener extends AbstractSamplingStatsDListener
 		implements TimerListener {
 
-	protected StatsDTimerListener(final StatsDClient client) {
+	public StatsDTimerListener(final StatsDClient client) {
 		super(Timer.class, client);
 	}
 

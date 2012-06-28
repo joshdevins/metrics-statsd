@@ -9,12 +9,11 @@ An extension to [joshdevins/metrics](https://github.com/joshdevins/metrics) (for
 client = new DefaultStatsDClient("localhost");
 
 // use Metric to access the default MetricListenersRegistry
-listenersRegistry = Metric.getDefaultMetricListenersRegistry();
+listenersRegistry = Metrics.defaultListenersRegistry();
 
 // create listeners for the things you care about
 // by default, all the listeners will listen to all Metrics of their class
-counterListener = new StatsDCounterListener(client);
-listenersRegistry.addListener(counterListener);
+listenersRegistry.addListener(new StatsDCounterListener(client));
 
 // override some default functionality
 specialCounterListener = new StatsDCounterListener(client);

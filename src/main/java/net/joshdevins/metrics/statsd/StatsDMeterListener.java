@@ -11,7 +11,7 @@ import com.yammer.metrics.core.MeterListener;
 public class StatsDMeterListener extends AbstractSamplingStatsDListener
 		implements MeterListener {
 
-	protected StatsDMeterListener(final StatsDClient client) {
+	public StatsDMeterListener(final StatsDClient client) {
 		super(Meter.class, client);
 	}
 
