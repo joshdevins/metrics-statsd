@@ -36,6 +36,10 @@ listenersRegistry.addListener(specialCounterListener);
 
 ```
 
+# TODO
+
+Add a Metrics reporter that can push non-realtime stats from metrics into Graphite directly or through StatsD.
+
 # Installation
 
 Since this currently relies on the fork [joshdevins/metrics](https://github.com/joshdevins/metrics), the prerequisite is that you head over there, clone the repo and `mvn install` to build the forked `metrics-core`.
