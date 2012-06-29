@@ -14,113 +14,114 @@ import org.junit.Test;
 
 public class StatsDUdpConnectionTest {
 
-	private static class UdpServer {
+    private static class UdpServer {
 
-		final int port;
+        final int port;
 
-		BlockingQueue<String> messages;
+        BlockingQueue<String> messages;
 
-		private boolean shutdown = false;
+        private boolean shutdown = false;
 
-		private final DatagramSocket serverSocket;
+        private final DatagramSocket serverSocket;
 
-		private final byte[] receiveData;
+        private final byte[] receiveData;
 
-		private final Thread thread;
+        private final Thread thread;
 
-		UdpServer() throws IOException {
-			port = getRandomUnusedPort();
-			serverSocket = new DatagramSocket(port);
-			receiveData = new byte[1024];
-			messages = new ArrayBlockingQueue<String>(1);
+        UdpServer() throws IOException {
+            port = getRandomUnusedPort();
+            serverSocket = new DatagramSocket(port);
+            receiveData = new byte[1024];
+            messages = new ArrayBlockingQueue<String>(1);
 
-			thread = new Thread() {
-				@Override
-				public void run() {
-					while (!shutdown) {
-						DatagramPacket receivePacket = new DatagramPacket(
-								receiveData, receiveData.length);
-						try {
-							serverSocket.receive(receivePacket);
-						} catch (IOException e) {
-							shutdown = true;
-						}
+            thread = new Thread() {
 
-						byte[] message = new byte[receivePacket.getLength()];
-						System.arraycopy(receivePacket.getData(),
-								receivePacket.getOffset(), message, 0,
-								receivePacket.getLength());
-						messages.add(new String(message));
-					}
-				}
-			};
-		}
+                @Override
+                public void run() {
+                    while (!shutdown) {
+                        DatagramPacket receivePacket = new DatagramPacket(
+                                receiveData, receiveData.length);
+                        try {
+                            serverSocket.receive(receivePacket);
+                        } catch (IOException e) {
+                            shutdown = true;
+                        }
 
-		void start() {
-			thread.start();
-		}
+                        byte[] message = new byte[receivePacket.getLength()];
+                        System.arraycopy(receivePacket.getData(),
+                                receivePacket.getOffset(), message, 0,
+                                receivePacket.getLength());
+                        messages.add(new String(message));
+                    }
+                }
+            };
+        }
 
-		void stop() {
-			shutdown = true;
-			serverSocket.close();
-		}
-	}
+        void start() {
+            thread.start();
+        }
 
-	private UdpServer server;
+        void stop() {
+            shutdown = true;
+            serverSocket.close();
+        }
+    }
 
-	private StatsDUdpConnection connection;
+    private UdpServer server;
 
-	@After
-	public void after() {
-		server.stop();
-		connection.close();
-	}
+    private StatsDUdpConnection connection;
 
-	@Before
-	public void before() throws IOException {
-		server = new UdpServer();
-		server.start();
-		connection = new StatsDUdpConnection("127.0.0.1", server.port);
-	}
+    @After
+    public void after() {
+        server.stop();
+        connection.close();
+    }
 
-	@Test
-	public void sendMessage() throws InterruptedException {
-		connection.send("message");
-		Assert.assertEquals("message", server.messages.take());
-	}
+    @Before
+    public void before() throws IOException {
+        server = new UdpServer();
+        server.start();
+        connection = new StatsDUdpConnection("127.0.0.1", server.port);
+    }
 
-	/**
-	 * Provides a quick way to get a random, unused port by opening a
-	 * {@link ServerSocket} and getting the locally assigned port for the server
-	 * socket.
-	 * 
-	 * @return A random, unused port.
-	 * 
-	 * @throws IllegalStateException
-	 *             Thrown if any {@link IOException}s are thrown by the
-	 *             underlying calls to {@link ServerSocket}.
-	 */
-	public static int getRandomUnusedPort() {
+    @Test
+    public void sendMessage() throws InterruptedException {
+        connection.send("message");
+        Assert.assertEquals("message", server.messages.take());
+    }
 
-		final int port;
-		ServerSocket socket = null;
-		try {
-			socket = new ServerSocket(0);
-			port = socket.getLocalPort();
-		} catch (final Exception e) {
-			throw new IllegalStateException(
-					"Failure picking a random, unused port.", e);
-		} finally {
-			if (socket != null) {
-				try {
-					socket.close();
-				} catch (final IOException ioe) {
-					throw new IllegalStateException(
-							"Failure closing temporary socket.", ioe);
-				}
-			}
-		}
+    /**
+     * Provides a quick way to get a random, unused port by opening a
+     * {@link ServerSocket} and getting the locally assigned port for the server
+     * socket.
+     * 
+     * @return A random, unused port.
+     * 
+     * @throws IllegalStateException
+     *         Thrown if any {@link IOException}s are thrown by the
+     *         underlying calls to {@link ServerSocket}.
+     */
+    public static int getRandomUnusedPort() {
 
-		return port;
-	}
+        final int port;
+        ServerSocket socket = null;
+        try {
+            socket = new ServerSocket(0);
+            port = socket.getLocalPort();
+        } catch (final Exception e) {
+            throw new IllegalStateException(
+                    "Failure picking a random, unused port.", e);
+        } finally {
+            if (socket != null) {
+                try {
+                    socket.close();
+                } catch (final IOException ioe) {
+                    throw new IllegalStateException(
+                            "Failure closing temporary socket.", ioe);
+                }
+            }
+        }
+
+        return port;
+    }
 }

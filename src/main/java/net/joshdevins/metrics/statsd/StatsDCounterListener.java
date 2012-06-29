@@ -9,17 +9,17 @@ import com.yammer.metrics.core.CounterListener;
  * @author Josh Devins
  */
 public class StatsDCounterListener extends AbstractStatsDListener implements
-		CounterListener {
+        CounterListener {
 
-	public StatsDCounterListener(final StatsDClient client) {
-		super(Counter.class, client);
-	}
+    public StatsDCounterListener(final StatsDClient client) {
+        super(Counter.class, client);
+    }
 
-	public void onClear(final Counter counter) {
-		getClient().gauge(extractBucketName(counter), 0);
-	}
+    public void onClear(final Counter counter) {
+        getClient().gauge(extractBucketName(counter), 0);
+    }
 
-	public void onUpdate(final Counter counter, final long delta) {
-		getClient().gauge(extractBucketName(counter), counter.getCount());
-	}
+    public void onUpdate(final Counter counter, final long delta) {
+        getClient().gauge(extractBucketName(counter), counter.getCount());
+    }
 }

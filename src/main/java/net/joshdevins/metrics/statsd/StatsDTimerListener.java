@@ -11,21 +11,21 @@ import com.yammer.metrics.core.TimerListener;
  * @author Josh Devins
  */
 public class StatsDTimerListener extends AbstractSamplingStatsDListener
-		implements TimerListener {
+        implements TimerListener {
 
-	public StatsDTimerListener(final StatsDClient client) {
-		super(Timer.class, client);
-	}
+    public StatsDTimerListener(final StatsDClient client) {
+        super(Timer.class, client);
+    }
 
-	public void onUpdate(final Timer timer, final long duration,
-			final TimeUnit unit) {
+    public void onUpdate(final Timer timer, final long duration,
+            final TimeUnit unit) {
 
-		if (shouldSample()) {
-			getClient().timing(extractBucketName(timer),
-					unit.toMillis(duration), getSampleRate());
-		} else {
-			getClient().timing(extractBucketName(timer),
-					unit.toMillis(duration));
-		}
-	}
+        if (shouldSample()) {
+            getClient().timing(extractBucketName(timer),
+                    unit.toMillis(duration), getSampleRate());
+        } else {
+            getClient().timing(extractBucketName(timer),
+                    unit.toMillis(duration));
+        }
+    }
 }

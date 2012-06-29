@@ -17,71 +17,72 @@ import com.yammer.metrics.core.Stoppable;
  */
 public abstract class AbstractStatsDListener {
 
-	private final StatsDClient client;
+    private final StatsDClient client;
 
-	private BucketNameFormatter bucketNameFormatter;
+    private BucketNameFormatter bucketNameFormatter;
 
-	private MetricPredicate metricPredicate;
+    private MetricPredicate metricPredicate;
 
-	/**
-	 * Default constructor.
-	 */
-	protected <M extends Metric> AbstractStatsDListener(
-			final Class<M> metricType, final StatsDClient client) {
+    /**
+     * Default constructor.
+     */
+    protected <M extends Metric> AbstractStatsDListener(
+            final Class<M> metricType, final StatsDClient client) {
 
-		this.client = client;
+        this.client = client;
 
-		bucketNameFormatter = new DefaultBucketNameFormatter();
-		metricPredicate = new MetricPredicate() {
-			public boolean matches(final MetricName name, final Metric metric) {
-				return metricType.isAssignableFrom(metric.getClass());
-			}
-		};
-	}
+        bucketNameFormatter = new DefaultBucketNameFormatter();
+        metricPredicate = new MetricPredicate() {
 
-	/**
-	 * Returns either the default metric predicate based on the observed metric,
-	 * or can be overriden by {@link #setMetricPredicate(MetricPredicate)}.
-	 */
-	public MetricPredicate getMetricPredicate() {
-		return metricPredicate;
-	}
+            public boolean matches(final MetricName name, final Metric metric) {
+                return metricType.isAssignableFrom(metric.getClass());
+            }
+        };
+    }
 
-	/**
-	 * Allow overriding of the default {@link BucketNameFormatter} (which is a
-	 * {@link DefaultBucketNameFormatter}.
-	 */
-	public void setBucketNameFormatter(
-			final BucketNameFormatter bucketNameFormatter) {
+    /**
+     * Returns either the default metric predicate based on the observed metric,
+     * or can be overriden by {@link #setMetricPredicate(MetricPredicate)}.
+     */
+    public MetricPredicate getMetricPredicate() {
+        return metricPredicate;
+    }
 
-		if (bucketNameFormatter == null) {
-			throw new NullPointerException();
-		}
+    /**
+     * Allow overriding of the default {@link BucketNameFormatter} (which is a
+     * {@link DefaultBucketNameFormatter}.
+     */
+    public void setBucketNameFormatter(
+            final BucketNameFormatter bucketNameFormatter) {
 
-		this.bucketNameFormatter = bucketNameFormatter;
-	}
+        if (bucketNameFormatter == null) {
+            throw new NullPointerException();
+        }
 
-	/**
-	 * Allow overriding of the default {@link MetricPredicate} (which is based
-	 * on the class of the listener).
-	 */
-	public void setMetricPredicate(final MetricPredicate metricPredicate) {
+        this.bucketNameFormatter = bucketNameFormatter;
+    }
 
-		if (metricPredicate == null) {
-			throw new NullPointerException();
-		}
+    /**
+     * Allow overriding of the default {@link MetricPredicate} (which is based
+     * on the class of the listener).
+     */
+    public void setMetricPredicate(final MetricPredicate metricPredicate) {
 
-		this.metricPredicate = metricPredicate;
-	}
+        if (metricPredicate == null) {
+            throw new NullPointerException();
+        }
 
-	protected String extractBucketName(final ObservableMetric<?> metric) {
-		return bucketNameFormatter.format(metric.getName());
-	}
+        this.metricPredicate = metricPredicate;
+    }
 
-	/**
-	 * Gets the underlying {@link StatsDClient}.
-	 */
-	protected StatsDClient getClient() {
-		return client;
-	}
+    protected String extractBucketName(final ObservableMetric<?> metric) {
+        return bucketNameFormatter.format(metric.getName());
+    }
+
+    /**
+     * Gets the underlying {@link StatsDClient}.
+     */
+    protected StatsDClient getClient() {
+        return client;
+    }
 }

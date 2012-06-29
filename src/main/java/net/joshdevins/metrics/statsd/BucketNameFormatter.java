@@ -9,13 +9,13 @@ import com.yammer.metrics.core.MetricName;
  */
 public interface BucketNameFormatter {
 
-	/**
-	 * Given a {@link MetricName}, format a bucket name for StatsD.
-	 * 
-	 * @param name
-	 *            the {@link MetricName} to convert
-	 * 
-	 * @return the formatted bucket name
-	 */
-	String format(MetricName name);
+    /**
+     * Given a {@link MetricName}, format a bucket name for StatsD.
+     * 
+     * @param name
+     *        the {@link MetricName} to convert
+     * 
+     * @return the formatted bucket name
+     */
+    String format(MetricName name);
 }

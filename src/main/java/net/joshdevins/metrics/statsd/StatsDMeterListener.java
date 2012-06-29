@@ -9,18 +9,18 @@ import com.yammer.metrics.core.MeterListener;
  * @author Josh Devins
  */
 public class StatsDMeterListener extends AbstractSamplingStatsDListener
-		implements MeterListener {
+        implements MeterListener {
 
-	public StatsDMeterListener(final StatsDClient client) {
-		super(Meter.class, client);
-	}
+    public StatsDMeterListener(final StatsDClient client) {
+        super(Meter.class, client);
+    }
 
-	public void onMark(final Meter meter, final long n) {
+    public void onMark(final Meter meter, final long n) {
 
-		if (shouldSample()) {
-			getClient().count(extractBucketName(meter), n, getSampleRate());
-		} else {
-			getClient().count(extractBucketName(meter), n);
-		}
-	}
+        if (shouldSample()) {
+            getClient().count(extractBucketName(meter), n, getSampleRate());
+        } else {
+            getClient().count(extractBucketName(meter), n);
+        }
+    }
 }

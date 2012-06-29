@@ -12,31 +12,31 @@ import com.yammer.metrics.core.MetricName;
 
 public class StatsDCounterListenerTest {
 
-	private StatsDClient mockClient;
+    private StatsDClient mockClient;
 
-	private StatsDCounterListener listener;
+    private StatsDCounterListener listener;
 
-	private Counter counter;
+    private Counter counter;
 
-	@Before
-	public void before() {
-		mockClient = mock(StatsDClient.class);
-		listener = new StatsDCounterListener(mockClient);
-		counter = Metrics.newCounter(new MetricName("group", "type", "name"));
-	}
+    @Before
+    public void before() {
+        mockClient = mock(StatsDClient.class);
+        listener = new StatsDCounterListener(mockClient);
+        counter = Metrics.newCounter(new MetricName("group", "type", "name"));
+    }
 
-	@Test
-	public void onClear() {
-		listener.onClear(counter);
-		verify(mockClient).gauge("group.type.name", 0);
-	}
+    @Test
+    public void onClear() {
+        listener.onClear(counter);
+        verify(mockClient).gauge("group.type.name", 0);
+    }
 
-	@Test
-	public void onUpdate() {
-		counter.inc();
-		Assert.assertEquals(1, counter.getCount());
+    @Test
+    public void onUpdate() {
+        counter.inc();
+        Assert.assertEquals(1, counter.getCount());
 
-		listener.onUpdate(counter, 1);
-		verify(mockClient).gauge("group.type.name", 1);
-	}
+        listener.onUpdate(counter, 1);
+        verify(mockClient).gauge("group.type.name", 1);
+    }
 }

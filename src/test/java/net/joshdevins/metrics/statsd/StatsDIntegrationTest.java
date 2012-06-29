@@ -23,138 +23,141 @@ import com.yammer.metrics.core.Timer;
  */
 public class StatsDIntegrationTest {
 
-	private static final Random RANDOM = new Random();
+    private static final Random RANDOM = new Random();
 
-	private DefaultStatsDClient client;
+    private DefaultStatsDClient client;
 
-	private MetricListenersRegistry listenersRegistry;
+    private MetricListenersRegistry listenersRegistry;
 
-	@After
-	public void after() {
-		client.shutdown();
-	}
+    @After
+    public void after() {
+        client.shutdown();
+    }
 
-	@Before
-	public void before() throws IOException {
-		client = new DefaultStatsDClient("statsd");
-		listenersRegistry = Metrics.defaultListenersRegistry();
-	}
+    @Before
+    public void before() throws IOException {
+        client = new DefaultStatsDClient("statsd");
+        listenersRegistry = Metrics.defaultListenersRegistry();
+    }
 
-	@Ignore
-	@Test
-	public void counterIntegration() throws InterruptedException {
+    @Ignore
+    @Test
+    public void counterIntegration() throws InterruptedException {
 
-		listenersRegistry.addListener(new StatsDCounterListener(client));
-		final Counter counter = Metrics.newCounter(new MetricName(
-				"metrics-statsd.test", "counter", "name"));
+        listenersRegistry.addListener(new StatsDCounterListener(client));
+        final Counter counter = Metrics.newCounter(new MetricName(
+                "metrics-statsd.test", "counter", "name"));
 
-		// final outcome is random and independent of duration of the test
-		doStuffForAWhile(1, new Runnable() {
-			public void run() {
+        // final outcome is random and independent of duration of the test
+        doStuffForAWhile(1, new Runnable() {
 
-				if (RANDOM.nextBoolean()) {
-					counter.inc();
-				} else {
-					counter.dec();
-				}
-			}
-		});
+            public void run() {
 
-		System.out.println("Last value: " + counter.getCount());
-	}
+                if (RANDOM.nextBoolean()) {
+                    counter.inc();
+                } else {
+                    counter.dec();
+                }
+            }
+        });
 
-	@Ignore
-	@Test
-	public void meterIntegration() throws InterruptedException {
+        System.out.println("Last value: " + counter.getCount());
+    }
 
-		listenersRegistry.addListener(new StatsDMeterListener(client));
-		final Meter meter = Metrics.newMeter(new MetricName(
-				"metrics-statsd.test", "meter", "name"), "marks",
-				TimeUnit.SECONDS);
+    @Ignore
+    @Test
+    public void meterIntegration() throws InterruptedException {
 
-		// current values should produce on around 20 marks/sec in Graphite
-		int count = doStuffForAWhile(5, new Runnable() {
-			public void run() {
-				meter.mark();
-			}
-		});
+        listenersRegistry.addListener(new StatsDMeterListener(client));
+        final Meter meter = Metrics.newMeter(new MetricName(
+                "metrics-statsd.test", "meter", "name"), "marks",
+                TimeUnit.SECONDS);
 
-		System.out.println("Total count:   " + meter.getCount());
-		System.out.println("Mean rate:     " + meter.getMeanRate() + " "
-				+ meter.getEventType() + "/" + meter.getRateUnit());
-		System.out.println("1-minute rate: " + meter.getOneMinuteRate() + " "
-				+ meter.getEventType() + "/" + meter.getRateUnit());
-		System.out.println("5-minute rate: " + meter.getFiveMinuteRate() + " "
-				+ meter.getEventType() + "/" + meter.getRateUnit());
+        // current values should produce on around 20 marks/sec in Graphite
+        int count = doStuffForAWhile(5, new Runnable() {
 
-		Assert.assertEquals(count, meter.getCount());
-	}
+            public void run() {
+                meter.mark();
+            }
+        });
 
-	@Ignore
-	@Test
-	public void timerIntegration() throws InterruptedException {
+        System.out.println("Total count:   " + meter.getCount());
+        System.out.println("Mean rate:     " + meter.getMeanRate() + " "
+                + meter.getEventType() + "/" + meter.getRateUnit());
+        System.out.println("1-minute rate: " + meter.getOneMinuteRate() + " "
+                + meter.getEventType() + "/" + meter.getRateUnit());
+        System.out.println("5-minute rate: " + meter.getFiveMinuteRate() + " "
+                + meter.getEventType() + "/" + meter.getRateUnit());
 
-		listenersRegistry.addListener(new StatsDTimerListener(client));
-		final Timer timer = Metrics.newTimer(new MetricName(
-				"metrics-statsd.test", "timer", "name"), TimeUnit.MILLISECONDS,
-				TimeUnit.SECONDS);
+        Assert.assertEquals(count, meter.getCount());
+    }
 
-		int count = doStuffForAWhile(5, new Runnable() {
-			public void run() {
-				timer.update((long) (RANDOM.nextDouble() * 100),
-						TimeUnit.MILLISECONDS);
-			}
-		});
+    @Ignore
+    @Test
+    public void timerIntegration() throws InterruptedException {
 
-		System.out.println("Total count:    " + timer.getCount());
-		System.out
-				.println("Total duration: "
-						+ timer.getSum()
-						+ " ms = "
-						+ TimeUnit.MILLISECONDS.toMinutes((long) timer.getSum())
-						+ " m");
-		System.out.println("Min duration:   " + timer.getMin() + " ms");
-		System.out.println("Max duration:   " + timer.getMax() + " ms");
-		System.out.println("Mean duration:  " + timer.getMean() + " ms");
-		System.out.println("Std deviation:  " + timer.getStdDev() + " ms");
-		System.out.println("Mean rate:      " + timer.getMeanRate() + " "
-				+ timer.getEventType());
-		System.out.println("1-minute rate:  " + timer.getOneMinuteRate() + " "
-				+ timer.getEventType() + "/" + timer.getRateUnit());
-		System.out.println("5-minute rate:  " + timer.getFiveMinuteRate() + " "
-				+ timer.getEventType() + "/" + timer.getRateUnit());
-		System.out.println("15-minute rate: " + timer.getFifteenMinuteRate()
-				+ " " + timer.getEventType() + "/" + timer.getRateUnit());
+        listenersRegistry.addListener(new StatsDTimerListener(client));
+        final Timer timer = Metrics.newTimer(new MetricName(
+                "metrics-statsd.test", "timer", "name"), TimeUnit.MILLISECONDS,
+                TimeUnit.SECONDS);
 
-		Assert.assertEquals(count, timer.getCount());
-	}
+        int count = doStuffForAWhile(5, new Runnable() {
 
-	/**
-	 * Produce output to StatsD at sort of random intervals for a period of
-	 * time.
-	 */
-	private int doStuffForAWhile(final int durationInMinutes,
-			final Runnable runnable) throws InterruptedException {
+            public void run() {
+                timer.update((long) (RANDOM.nextDouble() * 100),
+                        TimeUnit.MILLISECONDS);
+            }
+        });
 
-		long durationOfTest = TimeUnit.MINUTES.toMillis(durationInMinutes);
-		long start = new Date().getTime();
-		int count = 0;
+        System.out.println("Total count:    " + timer.getCount());
+        System.out
+                .println("Total duration: "
+                        + timer.getSum()
+                        + " ms = "
+                        + TimeUnit.MILLISECONDS.toMinutes((long) timer.getSum())
+                        + " m");
+        System.out.println("Min duration:   " + timer.getMin() + " ms");
+        System.out.println("Max duration:   " + timer.getMax() + " ms");
+        System.out.println("Mean duration:  " + timer.getMean() + " ms");
+        System.out.println("Std deviation:  " + timer.getStdDev() + " ms");
+        System.out.println("Mean rate:      " + timer.getMeanRate() + " "
+                + timer.getEventType());
+        System.out.println("1-minute rate:  " + timer.getOneMinuteRate() + " "
+                + timer.getEventType() + "/" + timer.getRateUnit());
+        System.out.println("5-minute rate:  " + timer.getFiveMinuteRate() + " "
+                + timer.getEventType() + "/" + timer.getRateUnit());
+        System.out.println("15-minute rate: " + timer.getFifteenMinuteRate()
+                + " " + timer.getEventType() + "/" + timer.getRateUnit());
 
-		while (start + durationOfTest > new Date().getTime()) {
+        Assert.assertEquals(count, timer.getCount());
+    }
 
-			long sleepFor = (long) (RANDOM.nextDouble() * 100);
-			Thread.sleep(sleepFor);
+    /**
+     * Produce output to StatsD at sort of random intervals for a period of
+     * time.
+     */
+    private int doStuffForAWhile(final int durationInMinutes,
+            final Runnable runnable) throws InterruptedException {
 
-			count++;
-			runnable.run();
+        long durationOfTest = TimeUnit.MINUTES.toMillis(durationInMinutes);
+        long start = new Date().getTime();
+        int count = 0;
 
-			System.out.print(".");
-			if (count % 100 == 0) {
-				System.out.println();
-			}
-		}
+        while (start + durationOfTest > new Date().getTime()) {
 
-		System.out.println();
-		return count;
-	}
+            long sleepFor = (long) (RANDOM.nextDouble() * 100);
+            Thread.sleep(sleepFor);
+
+            count++;
+            runnable.run();
+
+            System.out.print(".");
+            if (count % 100 == 0) {
+                System.out.println();
+            }
+        }
+
+        System.out.println();
+        return count;
+    }
 }
