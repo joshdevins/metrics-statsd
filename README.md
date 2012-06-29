@@ -38,7 +38,7 @@ listenersRegistry.addListener(specialCounterListener);
 
 # TODO
 
-Add a Metrics reporter that can push non-realtime stats from metrics into Graphite directly or through StatsD.
+Add a Metrics reporter that can push non-realtime stats from metrics into StatsD. See other metrics-statsd projects as well.
 
 # Installation
 
