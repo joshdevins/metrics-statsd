@@ -34,6 +34,10 @@ specialCounterListener.setBucketNameFormatter(formatter);
 
 listenersRegistry.addListener(specialCounterListener);
 
+// for convenience, if you just want to use all the defaults, use the StatsD helper class
+// this sets up all available listeners and returns a client (so you can shut it down later)
+client = StatsD.setupWithDefaults("localhost")
+
 ```
 
 # TODO
