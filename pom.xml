@@ -79,6 +79,19 @@
         <url>https://github.com/joshdevins/metrics-realtime/issues#issue/</url>
     </issueManagement>
 
+    <distributionManagement>
+        <snapshotRepository>
+            <id>soundcloud.internal.snapshots</id>
+            <name>SoundCloud Internal - Snapshots</name>
+            <url>http://maven.int.s-cloud.net/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>soundcloud.internal.releases</id>
+            <name>SoundCloud Internal - Releases</name>
+            <url>http://maven.int.s-cloud.net/content/repositories/releases</url>
+        </repository>
+    </distributionManagement>
+
     <build>
         <plugins>
             <plugin>
