@@ -69,14 +69,14 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:git://github.com/joshdevins/metrics-realtime.git</connection>
-        <developerConnection>scm:git:git@github.com:joshdevins/metrics-realtime.git</developerConnection>
-        <url>https://github.com/joshdevins/metrics-realtime/</url>
+        <connection>scm:git:git://github.com/joshdevins/metrics-statsd.git</connection>
+        <developerConnection>scm:git:git@github.com:joshdevins/metrics-statsd.git</developerConnection>
+        <url>https://github.com/joshdevins/metrics-statsd/</url>
     </scm>
 
     <issueManagement>
         <system>github</system>
-        <url>https://github.com/joshdevins/metrics-realtime/issues#issue/</url>
+        <url>https://github.com/joshdevins/metrics-statsd/issues#issue/</url>
     </issueManagement>
 
     <distributionManagement>
